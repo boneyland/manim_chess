@@ -6,7 +6,7 @@ from typing import Tuple
 
 DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
-def play_game(scene, board: Board, moves: list[Tuple[str, str, str]], eval_bar: EvaluationBar = None, evals: list[float] = None) -> None:
+def play_game(scene, board: Board, moves: list[Tuple[str, str, str]], eval_bar: EvaluationBar = None, evals: list[float] = None, animation_time: float = 0) -> None:
     """
     Executes a series of chess moves on a given board and updates the evaluation bar if provided.
 
@@ -23,6 +23,8 @@ def play_game(scene, board: Board, moves: list[Tuple[str, str, str]], eval_bar: 
         An evaluation bar object to visualize the evaluation of the board state (default is None).
     evals : list of float, optional
         A list of evaluation scores corresponding to each move (default is None).
+    animation_time : float
+        The time the animation will run for piece movement. Default value is 0 seconds.
 
     Returns:
     -------
@@ -53,7 +55,11 @@ def play_game(scene, board: Board, moves: list[Tuple[str, str, str]], eval_bar: 
             else:
                 board.move_piece(f'a{move[0][1]}', f'd{move[0][1]}')
 
-        board.move_piece(move[0], move[1])
+        if animation_time:
+            scene.play(board.move_piece(move[0], move[1], instant = False), run_time = animation_time)
+        else:
+            board.move_piece(move[0], move[1], instant = True)
+
         if move[2]:
             board.promote_piece(move[1], move[2])
 

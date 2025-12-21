@@ -29,6 +29,8 @@ class Board(Mobject):
         The manim color of the highlight on dark squares 
     color_highlight_dark : ManimColor
         The manim color of the highlight on light squares 
+    move_time : float
+        The time in seconds that a piece is animated moving.
 
     Methods:
     -------
@@ -92,6 +94,7 @@ class Board(Mobject):
         self.pieces = {}  # pieces[coordinate] = piece
         self.highlighted_squares = []
         self.arrows = []
+        self.move_time: float = 0
 
     def create_board(self) -> None:
         """
@@ -488,17 +491,30 @@ class Board(Mobject):
         for coordinate in self.highlighted_squares:
             self.unmark_square(coordinate)
 
-    def move_piece(self, starting_coordinate: str, ending_coordinate: str) -> None:
+    def move_piece(self, starting_coordinate: str, ending_coordinate: str, instant: bool = True) -> "Animation | None":
         """
-        Moves a piece from one square to another.
+        Move a piece from one square to another.
 
-        Parameters:
+        If instant is True, the piece is moved immediately with no animation.
+        If instant is False, an Animation is returned which can be played
+        by a Manim Scene to animate the move.
+
+        Parameters
         ----------
         starting_coordinate : str
             The coordinate of the square where the piece is currently located.
         ending_coordinate : str
-            The coordinate of the square where the piece is to be moved.
+            The coordinate of the square where the piece should be moved.
+        instant : bool, optional
+            Whether the move should happen instantly (default: True).
+
+        Returns
+        -------
+        Animation or None
+            An Animation representing the move if instant is False;
+            otherwise, None.
         """
+
         if ending_coordinate in self.pieces.keys():
             self.remove_piece(ending_coordinate)
         try:
@@ -508,14 +524,21 @@ class Board(Mobject):
 
             self.clear_higlights()
             self.highlighted_squares = []
-
-            piece_to_move.move_to(self.squares[ending_coordinate].get_center())
             self.highlight_square(starting_coordinate)
             self.highlight_square(ending_coordinate)
             self.highlighted_squares.append(starting_coordinate)
             self.highlighted_squares.append(ending_coordinate)
+
+            if instant:
+                piece_to_move.move_to(self.squares[ending_coordinate].get_center())
+            else:
+                animation = piece_to_move.animate.move_to(
+                    self.squares[ending_coordinate].get_center()
+                )
+                return animation
         except Exception as e:
             print(f'{e} has no piece associated')
+
 
     def promote_piece(self, coordinate: str, piece_type: str) -> None:
         """
