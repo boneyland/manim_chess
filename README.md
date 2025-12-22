@@ -28,7 +28,7 @@ below.
 
 
 ### Moving Pieces
-This example initializes the chessboard and shows how you can move a piece. *You can now change animation speed in the play_game function with animation_speed = float*
+This example initializes the chessboard and shows how you can move a piece. *You can now change animation time in the play_game function with animation_time = float*
 
 ![MovingPieces](https://github.com/swoyer2/manim_chess/blob/main/gifs/moving_pieces.gif)
 
